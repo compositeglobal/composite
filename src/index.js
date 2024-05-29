@@ -8,83 +8,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/CustomEase.min.js"></script>
 */
 
-// Page Transition Code
-/*
-// On page load
-let nextPageLink;
-$(".content-wrapper").addClass("first");
-
-// On link click - Update for all selectors
-$(
-  ".nav-link:not(.w--current), .button, .card-projects, .home-news-card, .footer-link, .news-gallery-link, .global-nav_logo-link, .bc-item, .next_text-link, .next_img-link"
-).on("click", function (e) {
-  e.preventDefault();
-  nextPageLink = $(this).attr("href");
-  $.ajax({
-    url: nextPageLink,
-    success: function (response) {
-      let element = $(response).find(".content-wrapper").addClass("second");
-      $(".main-wrapper").append(element);
-    },
-    complete: function () {
-      pageTransition();
-    },
-  });
-});
-
-function pageTransition() {
-  $("html").addClass("animating");
-  let tl = gsap.timeline({
-    paused: false,
-    onComplete: updatePage,
-  });
-  tl.from(".content-wrapper.second", {
-    y: "100vh",
-    delay: 0.2,
-    duration: 0.8, //0.8
-    ease: "power2.out",
-    borderRadius: "10rem",
-  });
-  tl.to(
-    ".overlay-transition",
-    {
-      opacity: 1,
-      duration: 0.3, //0.3
-      ease: "power1.out",
-    },
-    0
-  );
-  tl.to(
-    ".content-wrapper.first",
-    {
-      scale: 0.95,
-      duration: 0.3, //0.3
-      ease: "power1.out",
-      borderRadius: "4rem",
-    },
-    0
-  );
-}
-
-function updatePage() {
-  window.location = nextPageLink;
-}
-
-const updateCurrentClass = function (){
-  // Update for all selectors
-  $(
-    ".nav-link, .button, .card-projects, .home-news-card, .text-link, .news-gallery-link, .global-nav_logo-link, .bc-item, .next_text-link, .text_img-link"
-  ).removeClass("w--current");
-  $(
-    ".nav-link, .button, .card-projects, .home-news-card, .footer-link, .news-gallery-link, .global-nav_logo-link, .bc-item, .next_text-link, .next_img-link"
-  ).each(function () {
-    if ($(this).attr("href") === window.location.pathname) {
-      $(this).addClass("w--current");
-    }
-  });
-}
-updateCurrentClass()
-*/
 window.addEventListener("DOMContentLoaded", (event) => {
   if (window.innerWidth > 992) {
     // Split text into spans
@@ -403,3 +326,81 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   scrollReset();
 });
+
+// Page Transition Code
+/*
+// On page load
+let nextPageLink;
+$(".content-wrapper").addClass("first");
+
+// On link click - Update for all selectors
+$(
+  ".nav-link:not(.w--current), .button, .card-projects, .home-news-card, .footer-link, .news-gallery-link, .global-nav_logo-link, .bc-item, .next_text-link, .next_img-link"
+).on("click", function (e) {
+  e.preventDefault();
+  nextPageLink = $(this).attr("href");
+  $.ajax({
+    url: nextPageLink,
+    success: function (response) {
+      let element = $(response).find(".content-wrapper").addClass("second");
+      $(".main-wrapper").append(element);
+    },
+    complete: function () {
+      pageTransition();
+    },
+  });
+});
+
+function pageTransition() {
+  $("html").addClass("animating");
+  let tl = gsap.timeline({
+    paused: false,
+    onComplete: updatePage,
+  });
+  tl.from(".content-wrapper.second", {
+    y: "100vh",
+    delay: 0.2,
+    duration: 0.8, //0.8
+    ease: "power2.out",
+    borderRadius: "10rem",
+  });
+  tl.to(
+    ".overlay-transition",
+    {
+      opacity: 1,
+      duration: 0.3, //0.3
+      ease: "power1.out",
+    },
+    0
+  );
+  tl.to(
+    ".content-wrapper.first",
+    {
+      scale: 0.95,
+      duration: 0.3, //0.3
+      ease: "power1.out",
+      borderRadius: "4rem",
+    },
+    0
+  );
+}
+
+function updatePage() {
+  window.location = nextPageLink;
+}
+
+const updateCurrentClass = function (){
+  // Update for all selectors
+  $(
+    ".nav-link, .button, .card-projects, .home-news-card, .text-link, .news-gallery-link, .global-nav_logo-link, .bc-item, .next_text-link, .text_img-link"
+  ).removeClass("w--current");
+  $(
+    ".nav-link, .button, .card-projects, .home-news-card, .footer-link, .news-gallery-link, .global-nav_logo-link, .bc-item, .next_text-link, .next_img-link"
+  ).each(function () {
+    if ($(this).attr("href") === window.location.pathname) {
+      $(this).addClass("w--current");
+    }
+  });
+}
+updateCurrentClass()
+*/
