@@ -117,6 +117,8 @@ document.addEventListener("DOMContentLoaded", function () {
   ////////////////////////
   //Page Load & Transition
   const pageLoadandTransition = function () {
+    //Constants
+    const COOKIE = "page-visited";
     // Selectors
     const LOAD_WRAP = '[data-page-load="wrap"]';
     const LOAD_LOGO_FRONT = '[data-page-load="logo-front"]';
@@ -174,7 +176,7 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       //timeline to show page once loaded
       const tlLoaded = gsap.timeline();
-      tlLoaded.background(WRAP, { display: "none" });
+      tlLoaded.background(loadWrap, { display: "none" });
       tlLoaded.fromTo(
         loadLogoWrap,
         { opacity: 1 },
