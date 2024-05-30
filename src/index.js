@@ -1,4 +1,6 @@
 import SplitType from "split-type";
+import Lenis from "lenis";
+import { attr, runSplit } from "./utilities";
 
 /*
 <script src="https://cdn.jsdelivr.net/gh/videsigns/webflow-tools@latest/multi-step.js"></script>
@@ -10,111 +12,7 @@ import SplitType from "split-type";
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/CustomEase.min.js"></script>
 */
 
-window.addEventListener("DOMContentLoaded", (event) => {
-  if (window.innerWidth > 992) {
-    // Split text into spans
-    let typeSplit = new SplitType("[text-split]", {
-      types: "words, chars",
-      tagName: "span",
-    });
-
-    function createScrollTrigger(triggerElement, timeline) {
-      ScrollTrigger.create({
-        trigger: triggerElement,
-        start: "top bottom",
-        onLeaveBack: () => {
-          timeline.progress(0);
-          timeline.pause();
-        },
-      });
-      ScrollTrigger.create({
-        trigger: triggerElement,
-        start: "top 80%",
-        onEnter: () => timeline.play(),
-      });
-    }
-
-    $("[scrub-each-word]").each(function (index) {
-      let tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: $(this),
-          start: "top 95%",
-          end: "top center",
-          scrub: true,
-        },
-      });
-      tl.from($(this).find(".word"), {
-        opacity: 0.2,
-        duration: 0.2,
-        ease: "power1.out",
-        stagger: { each: 0.4 },
-      });
-    });
-
-    $("[letters-slide-up]").each(function (index) {
-      let tl = gsap.timeline({ paused: true });
-      tl.from($(this).find(".char"), {
-        yPercent: 100,
-        opacity: 0.2,
-        duration: 0.3,
-        ease: "power1.out",
-        stagger: { amount: 0.2 },
-      });
-      createScrollTrigger($(this), tl);
-    });
-
-    $("[letters-fade-in-random]").each(function (index) {
-      let tl = gsap.timeline({ paused: true });
-      tl.from($(this).find(".char"), {
-        opacity: 0,
-        duration: 0.5,
-        ease: "power1.out",
-        stagger: { amount: 0.4, from: "random" },
-      });
-      createScrollTrigger($(this), tl);
-    });
-
-    $("[words-fade-in-random]").each(function (index) {
-      let tl = gsap.timeline({ paused: true });
-      tl.from($(this).find(".word"), {
-        opacity: 0,
-        duration: 0.5,
-        ease: "power1.out",
-        stagger: { amount: 0.4, from: "random" },
-      });
-      createScrollTrigger($(this), tl);
-    });
-
-    $("[words-slide-up]").each(function (index) {
-      let tl = gsap.timeline({ paused: true });
-      tl.from($(this).find(".word"), {
-        opacity: 0,
-        yPercent: 100,
-        duration: 0.5,
-        ease: "power1.out",
-        stagger: { amount: 0.2 },
-      });
-      createScrollTrigger($(this), tl);
-    });
-
-    // Avoid flash of unstyled content
-    gsap.set("[text-split]", { opacity: 1 });
-  }
-});
-
-window.addEventListener("DOMContentLoaded", (event) => {
-  const urlElement = document.getElementById("url");
-  const pageTitleElement = document.getElementById("page-title");
-  if (urlElement) {
-    urlElement.value = window.location;
-  }
-  if (pageTitleElement) {
-    pageTitleElement.value = document.title;
-  }
-});
-
 ////////////////////////////////////////////
-////New Code
 document.addEventListener("DOMContentLoaded", function () {
   // register gsap plugins if available
   if (gsap.ScrollTrigger !== undefined) {
@@ -128,39 +26,265 @@ document.addEventListener("DOMContentLoaded", function () {
   //Previous Custom Code
 
   // LENIS SMOOTH SCROLL
-  let lenis;
-  if (Webflow.env("editor") === undefined) {
-    lenis = new Lenis({
-      lerp: 0.1,
-      wheelMultiplier: 0.7,
-      gestureOrientation: "vertical",
-      normalizeWheel: false,
-      smoothTouch: false,
-    });
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
+  const lenis = new Lenis({
+    lerp: 0.1,
+    wheelMultiplier: 0.7,
+    gestureOrientation: "vertical",
+    normalizeWheel: false,
+    smoothTouch: false,
+  });
+  // lenis request animation from
+  function raf(time) {
+    lenis.raf(time);
     requestAnimationFrame(raf);
   }
-  $("[data-lenis-start]").on("click", function () {
-    lenis.start();
-  });
-  $("[data-lenis-stop]").on("click", function () {
-    lenis.stop();
-  });
-  $("[data-lenis-toggle]").on("click", function () {
-    $(this).toggleClass("stop-scroll");
-    if ($(this).hasClass("stop-scroll")) {
-      lenis.stop();
-    } else {
-      lenis.start();
+  requestAnimationFrame(raf);
+
+  // anchor links
+  function anchorLinks() {
+    const anchorLinks = document.querySelectorAll("[scroll-to]");
+    if (anchorLinks == null) {
+      return;
     }
+    anchorLinks.forEach((item) => {
+      const targetID = item.getAttribute("scroll-to");
+      const target = document.getElementById(targetID);
+      if (!target) return;
+      item.addEventListener("click", (event) => {
+        lenis.scrollTo(target, {
+          duration: 0,
+        });
+      });
+    });
+  }
+  anchorLinks();
+
+  // stop page scrolling
+  function stopScroll() {
+    const stopScrollLinks = document.querySelectorAll("[data-lenis-stop]");
+    if (stopScrollLinks == null) {
+      return;
+    }
+    stopScrollLinks.forEach((item) => {
+      item.addEventListener("click", (event) => {
+        lenis.stop();
+      });
+    });
+  }
+  stopScroll();
+
+  // start page scrolling
+  function startScroll() {
+    const startScrollLinks = document.querySelectorAll("[data-lenis-start]");
+    if (startScrollLinks == null) {
+      return;
+    }
+    startScrollLinks.forEach((item) => {
+      item.addEventListener("click", (event) => {
+        lenis.start();
+      });
+    });
+  }
+  startScroll();
+
+  // toggle page scrolling
+  function toggleScroll() {
+    const toggleScrollLinks = document.querySelectorAll("[data-lenis-toggle]");
+    if (toggleScrollLinks == null) {
+      return;
+    }
+    toggleScrollLinks.forEach((item) => {
+      let stopScroll = false;
+      item.addEventListener("click", (event) => {
+        stopScroll = !stopScroll;
+        if (stopScroll) lenis.stop();
+        else lenis.start();
+      });
+    });
+  }
+  toggleScroll();
+
+  // Keep lenis and scrolltrigger in sync
+  lenis.on("scroll", () => {
+    if (!ScrollTrigger) return;
+    ScrollTrigger.update();
   });
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  });
+  gsap.ticker.lagSmoothing(0);
 
+  ////////////////////////
+  //Page Load & Transition
+  const pageLoadandTransition = function () {
+    // Selectors
+    const LOAD_WRAP = '[data-page-load="wrap"]';
+    const LOAD_LOGO_FRONT = '[data-page-load="logo-front"]';
+    const LOAD_LOGO_WRAP = '[data-page-load="logo-wrap"]';
+
+    const LOAD_BG = '[data-page-load="background"]';
+    const PAGE_WRAP = ".main-wrapper";
+    const TRANSITION_WRAP = '[data-page-transition="wrap"]';
+    const TRANSITION_CLOUD_1 = '[data-page-transition="cloud-1"]';
+    const TRANSITION_CLOUD_2 = '[data-page-transition="cloud-2"]';
+    //Options
+    // if '[data-transition="false"]' then prevent the transition
+    const EXCLUDE = "data-transition";
+
+    //Get Elements
+    const loadWrap = document.querySelector(LOAD_WRAP);
+    const loadLogoFront = document.querySelector(LOAD_LOGO_FRONT);
+    const loadLogoWrap = document.querySelector(LOAD_LOGO_WRAP);
+    const loadBackground = document.querySelector(LOAD_BG);
+    const pageWrap = document.querySelector(PAGE_WRAP);
+    if (
+      !loadWrap ||
+      !loadLogoFront ||
+      !loadLogoWrap ||
+      !loadBackground ||
+      !pageWrap
+    )
+      return;
+
+    const transitionWrap = document.querySelector(TRANSITION_WRAP);
+    const transitionCloud1 = document.querySelector(TRANSITION_CLOUD_1);
+    const transitionCloud2 = document.querySelector(TRANSITION_CLOUD_2);
+    if (!transitionWrap || !transitionCloud1 || !transitionCloud2) return;
+
+    const pageLoad = function () {
+      //check if site has been visited, if it has set cookie
+      if (localStorage.getItem(COOKIE) === null) {
+        // item is set set visited to true
+        localStorage.setItem(COOKIE, "true");
+      } else {
+        return;
+      }
+
+      //timeline while page is loading
+      const tlLoading = gsap.timeline();
+      //tweens
+      tlLoading.background(WRAP, { display: "block" });
+      tlLoading.fromTo(
+        logoFront,
+        { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" },
+        {
+          clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
+          duration: 0.8,
+        }
+      );
+      //timeline to show page once loaded
+      const tlLoaded = gsap.timeline();
+      tlLoaded.background(WRAP, { display: "none" });
+      tlLoaded.fromTo(
+        loadLogoWrap,
+        { opacity: 1 },
+        {
+          opacity: 0,
+          duration: 0.8,
+        }
+      );
+      tlLoaded.fromTo(
+        pageWrap,
+        { y: "0vh", scale: 0.8, borderRadius: "10vw, 10vw, 0vw, 0vw" },
+        {
+          y: "-100vh",
+          scale: 1,
+          borderRadius: "0vw, 0vw, 0vw, 0vw",
+          duration: 0.8,
+        }
+      );
+    };
+    pageLoad();
+
+    const pageTransition = function () {
+      const inAnimation = function () {
+        //timeline
+        const tlLoad = gsap.timeline();
+        //tweens
+        tlLoad.to(transitionCloud1, { yPercent: -100, stagger: 0.2 });
+        tlLoad.set(transitionWrap, { display: "none" });
+      };
+      const outAnimation = function (linkURL) {
+        //timeline
+        const tlClick = gsap.timeline({
+          onComplete: () =>
+            setTimeout(() => {
+              window.location.href = linkURL;
+            }, 100),
+        });
+        //tweens
+        tlClick.set(transitionWrap, { display: "flex" });
+        tlClick.fromTo(
+          transitionCloud1,
+          { yPercent: 100 },
+          { yPercent: 0, stagger: 0.2 }
+        );
+      };
+
+      // Page load animation
+      //check if site has been visited, if it run the load in animation
+      if (localStorage.getItem(COOKIE) !== null) {
+        inAnimation();
+      }
+
+      const checkLink = function (link) {
+        if (!link || link.tagName !== "A") {
+          // If the argument is not a link element, return false
+          return false;
+        }
+        // get the attributes from the link
+        const hostname = link.hostname;
+        const target = link.target;
+        const href = link.getAttribute("href");
+        //check the link for a prevent transition attribute.
+        const playTransition = attr(true, link.getAttribute(EXCLUDE));
+        // link doesn't have prevent transition attribute, link is for the current site, link isn't an anchor, link doesn't open in new tab
+        if (
+          !hostname ||
+          hostname !== window.location.hostname ||
+          (target && target === "_blank") ||
+          !href ||
+          href.includes("#") ||
+          !playTransition
+        ) {
+          return false;
+        } else {
+          return true;
+        }
+      };
+
+      // Link click event listener
+      document.querySelectorAll("a").forEach((link) => {
+        //get the link url
+        const linkURL = link.getAttribute("href");
+        // check if the link should play the transition, requirements:
+        const playTransition = checkLink(link);
+        //conditionally play the transition
+        if (playTransition) {
+          // add event listener for link click
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            //turn on if using lenis to prevent scrolling during the transition.
+            //lenis.stop()
+            //gsap timeline
+            const tlClick = outAnimation(linkURL);
+          });
+        }
+      });
+
+      // Prevents back button bug on safari
+      window.onpageshow = function (event) {
+        if (event.persisted) window.location.reload();
+      };
+    };
+    pageTransition();
+  };
+  pageLoadandTransition();
+
+  ////////////////////////
   //Utility Functions
-  //replace low res images once high res images are loaded
 
+  //replace low res images once high res images are loaded
   const loadHighResImages = function () {
     const highResImages = document.querySelectorAll(
       ".image-container .high-res"
@@ -257,6 +381,96 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   contactModal();
 
+  const oldScrollIn = function () {
+    // Split text into spans
+    let typeSplit = new SplitType("[text-split]", {
+      types: "words, chars",
+      tagName: "span",
+    });
+
+    function createScrollTrigger(triggerElement, timeline) {
+      ScrollTrigger.create({
+        trigger: triggerElement,
+        start: "top bottom",
+        onLeaveBack: () => {
+          timeline.progress(0);
+          timeline.pause();
+        },
+      });
+      ScrollTrigger.create({
+        trigger: triggerElement,
+        start: "top 80%",
+        onEnter: () => timeline.play(),
+      });
+    }
+
+    $("[scrub-each-word]").each(function (index) {
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: $(this),
+          start: "top 95%",
+          end: "top center",
+          scrub: true,
+        },
+      });
+      tl.from($(this).find(".word"), {
+        opacity: 0.2,
+        duration: 0.2,
+        ease: "power1.out",
+        stagger: { each: 0.4 },
+      });
+    });
+
+    $("[letters-slide-up]").each(function (index) {
+      let tl = gsap.timeline({ paused: true });
+      tl.from($(this).find(".char"), {
+        yPercent: 100,
+        opacity: 0.2,
+        duration: 0.3,
+        ease: "power1.out",
+        stagger: { amount: 0.2 },
+      });
+      createScrollTrigger($(this), tl);
+    });
+
+    $("[letters-fade-in-random]").each(function (index) {
+      let tl = gsap.timeline({ paused: true });
+      tl.from($(this).find(".char"), {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power1.out",
+        stagger: { amount: 0.4, from: "random" },
+      });
+      createScrollTrigger($(this), tl);
+    });
+
+    $("[words-fade-in-random]").each(function (index) {
+      let tl = gsap.timeline({ paused: true });
+      tl.from($(this).find(".word"), {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power1.out",
+        stagger: { amount: 0.4, from: "random" },
+      });
+      createScrollTrigger($(this), tl);
+    });
+
+    $("[words-slide-up]").each(function (index) {
+      let tl = gsap.timeline({ paused: true });
+      tl.from($(this).find(".word"), {
+        opacity: 0,
+        yPercent: 100,
+        duration: 0.5,
+        ease: "power1.out",
+        stagger: { amount: 0.2 },
+      });
+      createScrollTrigger($(this), tl);
+    });
+
+    // Avoid flash of unstyled content
+    gsap.set("[text-split]", { opacity: 1 });
+  };
+
   //////////////////////////////
   //Control Functions on page load
   const gsapInit = function () {
@@ -275,7 +489,8 @@ document.addEventListener("DOMContentLoaded", function () {
         //functional interactions
 
         //conditional interactions
-        if (!reduceMotion) {
+        if (!reduceMotion && isDesktop) {
+          oldScrollIn();
         }
       }
     );
