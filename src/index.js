@@ -1,3 +1,5 @@
+import SplitType from "split-type";
+
 /*
 <script src="https://cdn.jsdelivr.net/gh/videsigns/webflow-tools@latest/multi-step.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.23/bundled/lenis.min.js"></script> 
@@ -158,30 +160,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //Utility Functions
   //replace low res images once high res images are loaded
+
   const loadHighResImages = function () {
-    const highResImages = document.querySelectorAll(
-      ".image-container .high-res"
-    );
-    //if no high res images exist return the function
-    if (highResImages.length === 0) return;
-    highResImages.forEach((highResImg) => {
-      const lowResImg = highResImg.previousElementSibling; // Assuming the low-res image is always right before the high-res image
-
-      // Check if the high-res image is fully loaded
-      if (highResImg.complete) {
-        highResImg.style.opacity = 1;
-        lowResImg.style.opacity = 0;
-      } else {
-        highResImg.onload = () => {
-          highResImg.style.opacity = 1;
-          lowResImg.style.opacity = 0;
-        };
-      }
-    });
-  };
-  loadHighResImages();
-
-  const loadHighResImages2 = function () {
     const highResImages = document.querySelectorAll(
       ".image-container .high-res"
     );
@@ -207,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   };
-  loadHighResImages2();
+  loadHighResImages();
 
   //set all button hover text to the same values
   const updateButtonText = function () {
