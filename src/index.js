@@ -5,6 +5,41 @@ import { attr, runSplit } from "./utilities";
 
 ////////////////////////
 //Page Load & Transition
+const pageLoadAnimation = function () {
+  // selectors
+  const ATTRIBUTE = "data-load";
+  // types of scrolling elements (value for scrollin element attribute)
+  const TITLE = "title";
+  const ITEM = "item";
+
+  const items = document.querySelectorAll(`[${ATTRIBUTE}="${ITEM}"]`);
+  const title = document.querySelector(`[${ATTRIBUTE}="${TITLE}"]`);
+  if (!title || items.length === 0) return;
+
+  const splitText = runSplit(title, "lines, words, chars");
+  if (!splitText) return;
+
+  const tl = gsap.timeline({
+    paused: true,
+    defaults: {
+      ease: "power1.inOut",
+      duration: 0.6,
+    },
+  });
+  tl.set(title, { opacity: 1 });
+  tl.fromTo(
+    splitText.words,
+    { opacity: 0 },
+    { opacity: 1, stagger: { each: 0.1, from: "random" } }
+  );
+  tl.fromTo(
+    items,
+    { opacity: 0, y: "2rem" },
+    { opacity: 1, y: "0rem", stagger: { each: 0.2, from: "start" } }
+  );
+  return tl;
+};
+const heroAnimation = pageLoadAnimation();
 const pageLoadandTransition = function () {
   //Constants
   const COOKIE = "page-visited";
@@ -63,18 +98,20 @@ const pageLoadandTransition = function () {
         defaults: {
           ease: "power1.inOut",
         },
+        onComplete: () => heroAnimation.play(),
       });
+
       //tweens
-      tlLoad.to(transitionBackground, { opacity: 0, duration: 0.6 });
+      tlLoad.to(transitionBackground, { opacity: 0, duration: 0.8 });
       tlLoad.to(
         transitionCloud1,
-        { xPercent: -100, scale: 0.8, opacity: 0, duration: 2 },
+        { xPercent: -10, scale: 2, opacity: 0, duration: 1.2 },
         "<.2"
       );
       tlLoad.to(
         transitionCloud2,
-        { xPercent: 100, scale: 0.8, opacity: 0, duration: 2 },
-        "<.2"
+        { xPercent: 10, scale: 2, opacity: 0, duration: 1.2 },
+        "<"
       );
       tlLoad.set(transitionWrap, { display: "none" });
       tlLoad.set("body", { overflow: "visible" });
@@ -95,12 +132,12 @@ const pageLoadandTransition = function () {
       tlClick.set(transitionWrap, { display: "flex" });
       tlClick.fromTo(
         transitionCloud1,
-        { xPercent: -100, scale: 0.8, opacity: 0 },
+        { xPercent: -10, scale: 2, opacity: 0 },
         { xPercent: 0, scale: 1, opacity: 1, duration: 1.2 }
       );
       tlClick.fromTo(
         transitionCloud2,
-        { xPercent: 100, scale: 0.8, opacity: 0 },
+        { xPercent: 10, scale: 2, opacity: 0 },
         { xPercent: 0, scale: 1, opacity: 1, duration: 1.2 },
         "<"
       );
@@ -156,7 +193,6 @@ const pageLoadandTransition = function () {
         // add event listener for link click
         link.addEventListener("click", function (e) {
           e.preventDefault();
-          console.log(linkURL);
           //turn on if using lenis to prevent scrolling during the transition.
           //lenis.stop()
           //gsap timeline
@@ -193,6 +229,7 @@ const pageLoadandTransition = function () {
     const tlLoading = gsap.timeline({ paused: true });
     //tweens
     tlLoading.set(loadWrap, { display: "flex" });
+    tlLoading.set(loadLogoWrap, { display: "flex" });
     tlLoading.set(loadBackground, { display: "flex" });
     tlLoading.set(loadLogoFront, { opacity: 1 });
     tlLoading.fromTo(
@@ -205,7 +242,11 @@ const pageLoadandTransition = function () {
       }
     );
     //timeline to show page once loaded
-    const tlLoaded = gsap.timeline({ paused: true, delay: 0.1 });
+    const tlLoaded = gsap.timeline({
+      paused: true,
+      delay: 0.1,
+      onComplete: () => heroAnimation.play(),
+    });
     tlLoaded.set(loadBackground, { display: "none" });
     tlLoaded.fromTo(
       loadLogoWrap,
@@ -483,94 +524,269 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   contactModal();
 
-  const oldScrollIn = function () {
-    // Split text into spans
-    let typeSplit = new SplitType("[text-split]", {
-      types: "words, chars",
-      tagName: "span",
-    });
+  const scrollIn = function () {
+    // selectors
+    const ATTRIBUTE = "data-scrollin";
+    // types of scrolling elements (value for scrollin element attribute)
+    const HEADING = "heading";
+    const SUBHEADING = "subheading";
+    const ITEM = "item";
+    const CONTAINER = "container";
+    const STAGGER = "stagger";
+    const RICH_TEXT = "rich-text";
+    const IMAGE_WRAP = "image-wrap";
+    const IMAGE = "image";
+    const LINE = "line";
 
-    function createScrollTrigger(triggerElement, timeline) {
-      ScrollTrigger.create({
-        trigger: triggerElement,
-        start: "top bottom",
-        onLeaveBack: () => {
-          timeline.progress(0);
-          timeline.pause();
+    //options
+    const SCROLL_START = "data-scrollin-start";
+    const SCROLL_END = "data-scrollin-end";
+    const SCROLL_STAGGER_X = "data-scrollin-stagger-x";
+    const CLIP_DIRECTION = "data-scrollin-direction";
+
+    //resuable timeline creation with option attributes for individual customization per element
+    const scrollInTL = function (item, options = {}) {
+      // default GSAP options
+      const settings = {
+        start: "top 90%",
+        end: "top 60%",
+      };
+      if (options.scrub !== true) {
+        settings.toggleActions = "play none none none";
+      } else {
+        settings.scrub = true;
+      }
+
+      //override settings if an attribute is present and a valid type.
+      settings.start = attr(settings.start, item.getAttribute(SCROLL_START));
+      settings.end = attr(settings.end, item.getAttribute(SCROLL_END));
+      const tl = gsap.timeline({
+        defaults: {
+          duration: 0.6,
+          ease: "power1.out",
         },
-      });
-      ScrollTrigger.create({
-        trigger: triggerElement,
-        start: "top 80%",
-        onEnter: () => timeline.play(),
-      });
-    }
-
-    $("[scrub-each-word]").each(function (index) {
-      let tl = gsap.timeline({
         scrollTrigger: {
-          trigger: $(this),
-          start: "top 95%",
-          end: "top center",
-          scrub: true,
+          trigger: item,
+          start: settings.start,
+          end: settings.end,
+          toggleActions: settings.toggleActions,
+          scrub: settings.scrub,
         },
       });
-      tl.from($(this).find(".word"), {
-        opacity: 0.2,
-        duration: 0.2,
-        ease: "power1.out",
-        stagger: { each: 0.4 },
-      });
-    });
+      return tl;
+    };
 
-    $("[letters-slide-up]").each(function (index) {
-      let tl = gsap.timeline({ paused: true });
-      tl.from($(this).find(".char"), {
-        yPercent: 100,
-        opacity: 0.2,
-        duration: 0.3,
-        ease: "power1.out",
-        stagger: { amount: 0.2 },
-      });
-      createScrollTrigger($(this), tl);
-    });
-
-    $("[letters-fade-in-random]").each(function (index) {
-      let tl = gsap.timeline({ paused: true });
-      tl.from($(this).find(".char"), {
+    //resuable timeline creation with option attributes for individual customization per element
+    const defaultTween = function (item, tl, options = {}) {
+      const varsFrom = {
         opacity: 0,
-        duration: 0.5,
-        ease: "power1.out",
-        stagger: { amount: 0.4, from: "random" },
-      });
-      createScrollTrigger($(this), tl);
-    });
+        y: "2rem",
+      };
+      const varsTo = {
+        opacity: 1,
+        y: "0rem",
+      };
+      //optional adjustments to the tween
+      // {stagger: large}
+      if (options.stagger === true) {
+        varsTo.stagger = { each: 0.1, from: "start" };
+      }
+      // putting tween together
+      const tween = tl.fromTo(item, varsFrom, varsTo);
+      return tween;
+    };
 
-    $("[words-fade-in-random]").each(function (index) {
-      let tl = gsap.timeline({ paused: true });
-      tl.from($(this).find(".word"), {
-        opacity: 0,
-        duration: 0.5,
-        ease: "power1.out",
-        stagger: { amount: 0.4, from: "random" },
+    const scrollInHeading = function (item) {
+      //split the text
+      const splitText = runSplit(item, "lines, words, chars");
+      if (!splitText) return;
+      //set heading to full opacity (check to see if needed)
+      // item.style.opacity = 1;
+      const tl = scrollInTL(item);
+      tl.fromTo(
+        splitText.chars,
+        {
+          opacity: 0,
+        },
+        {
+          opacity: 1,
+          ease: "power1.out",
+          stagger: { amount: 0.4, from: "random" },
+        }
+      );
+      //add event calleback to revert text on completion
+      tl.eventCallback("onComplete", () => {
+        // splitText.revert();
       });
-      createScrollTrigger($(this), tl);
-    });
+    };
 
-    $("[words-slide-up]").each(function (index) {
-      let tl = gsap.timeline({ paused: true });
-      tl.from($(this).find(".word"), {
-        opacity: 0,
-        yPercent: 100,
-        duration: 0.5,
-        ease: "power1.out",
-        stagger: { amount: 0.2 },
+    const scrollInSubHeading = function (item) {
+      //split the text
+      const splitText = runSplit(item);
+      if (!splitText) return;
+      //set heading to full opacity (check to see if needed)
+      // item.style.opacity = 1;
+      const tl = scrollInTL(item, { scrub: true });
+      tl.fromTo(
+        splitText.words,
+        {
+          opacity: 0.2,
+        },
+        {
+          opacity: 1,
+          ease: "power1.out",
+          stagger: { each: 0.4 },
+        }
+      );
+    };
+
+    const scrollInItem = function (item) {
+      if (!item) return;
+      const tl = scrollInTL(item);
+      const tween = defaultTween(item, tl);
+    };
+
+    //utility function to get the clipping direction of items (horizontal or vertical only)
+    const getCLipStart = function (item) {
+      //set defautl direction
+      let defaultDirection = "top";
+      let clipStart;
+      //get the clip direction
+      const direction = attr(
+        defaultDirection,
+        item.getAttribute(CLIP_DIRECTION)
+      );
+      const clipDirections = {
+        left: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
+        right: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)",
+        top: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+        bottom: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
+      };
+      //check for each possible direction and map it to the correct clipping value
+      if (direction === "left") {
+        clipStart = clipDirections.left;
+      }
+      if (direction === "right") {
+        clipStart = clipDirections.right;
+      }
+      if (direction === "top") {
+        clipStart = clipDirections.top;
+      }
+      if (direction === "bottom") {
+        clipStart = clipDirections.bottom;
+      }
+      return clipStart;
+    };
+
+    const scrollInImage = function (item) {
+      //item is the image wrap for this animation
+      if (!item) return;
+      //set clip path directions
+      const clipStart = getCLipStart(item);
+      const clipEnd = "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
+      //create timeline
+      const tl = scrollInTL(item);
+      tl.fromTo(
+        item,
+        {
+          clipPath: clipStart,
+        },
+        {
+          clipPath: clipEnd,
+          duration: 1,
+        }
+      );
+    };
+
+    const scrollInLine = function (item) {
+      if (!item) return;
+      //set clip path directions
+      const clipStart = getCLipStart(item);
+      const clipEnd = "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
+      //create timeline
+      const tl = scrollInTL(item);
+      tl.fromTo(
+        item,
+        {
+          clipPath: clipStart,
+        },
+        {
+          clipPath: clipEnd,
+        }
+      );
+    };
+
+    const scrollInContainer = function (item) {
+      if (!item) return;
+      //get the children of the item
+      const children = gsap.utils.toArray(item.children);
+      if (children.length === 0) return;
+      children.forEach((child) => {
+        const tl = scrollInTL(child);
+        const tween = defaultTween(child, tl);
       });
-      createScrollTrigger($(this), tl);
-    });
+    };
 
-    // Avoid flash of unstyled content
-    gsap.set("[text-split]", { opacity: 1 });
+    const scrollInStagger = function (item) {
+      if (!item) return;
+
+      // get the children of the item
+      const children = gsap.utils.toArray(item.children);
+      if (children.length === 0) return;
+      const tl = scrollInTL(item);
+      const tween = defaultTween(children, tl, { stagger: true });
+    };
+
+    const scrollInRichText = function (item) {
+      if (!item) return;
+      //get the children of the item
+      const children = gsap.utils.toArray(item.children);
+      if (children.length === 0) return;
+      children.forEach((child) => {
+        const childTag = child.tagName;
+        //apply the items animation based on the child type
+        if (["H1", "H2", "H3", "H4", "H5", "H6"].includes(childTag)) {
+          scrollInHeading(child);
+        }
+        if (childTag === "FIGURE") {
+          scrollInImage(child);
+        } else {
+          scrollInItem(child);
+        }
+      });
+    };
+
+    //get all elements and apply animations
+    const items = gsap.utils.toArray(`[${ATTRIBUTE}]`);
+    items.forEach((item) => {
+      if (!item) return;
+      //find the type of the scrolling animation and apply it to the element
+      const scrollInType = item.getAttribute(ATTRIBUTE);
+      if (scrollInType === HEADING) {
+        scrollInHeading(item);
+      }
+      if (scrollInType === SUBHEADING) {
+        scrollInSubHeading(item);
+      }
+      if (scrollInType === ITEM) {
+        scrollInItem(item);
+      }
+      if (scrollInType === IMAGE) {
+        scrollInImage(item);
+      }
+      if (scrollInType === LINE) {
+        scrollInLine(item);
+      }
+      if (scrollInType === CONTAINER) {
+        scrollInContainer(item);
+      }
+      if (scrollInType === STAGGER) {
+        scrollInStagger(item);
+      }
+      if (scrollInType === RICH_TEXT) {
+        scrollInRichText(item);
+      }
+    });
   };
 
   //////////////////////////////
@@ -592,7 +808,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         //conditional interactions
         if (!reduceMotion && isDesktop) {
-          oldScrollIn();
+          // oldScrollIn();
+          scrollIn();
         }
       }
     );
