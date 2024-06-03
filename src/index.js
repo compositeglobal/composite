@@ -1,7 +1,7 @@
 import SplitType from "split-type";
 import Lenis from "lenis";
 import imagesLoaded from "imagesloaded";
-import { attr, runSplit } from "./utilities";
+import { attr, runSplit, checkBreakpoints } from "./utilities";
 
 ////////////////////////
 //Page Load & Transition
@@ -22,7 +22,7 @@ const pageLoadAnimation = function () {
   const tl = gsap.timeline({
     paused: true,
     defaults: {
-      ease: "power1.inOut",
+      ease: "power1.out",
       duration: 0.6,
     },
   });
@@ -35,7 +35,8 @@ const pageLoadAnimation = function () {
   tl.fromTo(
     items,
     { opacity: 0, y: "2rem" },
-    { opacity: 1, y: "0rem", stagger: { each: 0.2, from: "start" } }
+    { opacity: 1, y: "0rem", stagger: { each: 0.2, from: "start" } },
+    "<.3"
   );
   return tl;
 };
@@ -98,30 +99,40 @@ const pageLoadandTransition = function () {
         defaults: {
           ease: "power1.inOut",
         },
-        onComplete: () => heroAnimation.play(),
+        // onComplete: () => heroAnimation.play(),
       });
 
       //tweens
+      tlLoad.set(transitionCloud1, { opacity: 0 });
+      tlLoad.set(transitionCloud2, { opacity: 0 });
       tlLoad.to(transitionBackground, { opacity: 0, duration: 0.8 });
-      tlLoad.to(
-        transitionCloud1,
-        { xPercent: -10, scale: 2, opacity: 0, duration: 1.2 },
-        "<.2"
-      );
-      tlLoad.to(
-        transitionCloud2,
-        { xPercent: 10, scale: 2, opacity: 0, duration: 1.2 },
-        "<"
-      );
+
+      // tlLoad.to(
+      //   transitionCloud1,
+      //   { xPercent: -10, scale: 2, opacity: 0, duration: 1.2 },
+      //   "<.2"
+      // );
+      // tlLoad.to(
+      //   transitionCloud2,
+      //   { xPercent: 10, scale: 2, opacity: 0, duration: 1.2 },
+      //   "<"
+      // );
       tlLoad.set(transitionWrap, { display: "none" });
       tlLoad.set("body", { overflow: "visible" });
+      //play hero animation just before load animation finishes
+      tlLoad.eventCallback("onStart", () => {
+        const duration = (tlLoad.duration() - 0.2) * 1000;
+        setTimeout(() => {
+          heroAnimation.play();
+        }, duration);
+      });
     };
     const clickAnimation = function (linkURL) {
       //timeline
       const tlClick = gsap.timeline({
         paused: false,
         defaults: {
-          ease: "power1.inOut",
+          ease: "power2.inOut",
         },
         onComplete: () =>
           setTimeout(() => {
@@ -524,7 +535,9 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   contactModal();
 
-  const scrollIn = function () {
+  const scrollIn = function (gsapContext) {
+    //animation ID
+    const ANIMATION_ID = "scrollin";
     // selectors
     const ATTRIBUTE = "data-scrollin";
     // types of scrolling elements (value for scrollin element attribute)
@@ -760,6 +773,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const items = gsap.utils.toArray(`[${ATTRIBUTE}]`);
     items.forEach((item) => {
       if (!item) return;
+      //check breakpoints and quit function if set on specific breakpoints
+      let runOnBreakpoint = checkBreakpoints(item, ANIMATION_ID, gsapContext);
+      if (runOnBreakpoint === false) return;
       //find the type of the scrolling animation and apply it to the element
       const scrollInType = item.getAttribute(ATTRIBUTE);
       if (scrollInType === HEADING) {
@@ -809,7 +825,7 @@ document.addEventListener("DOMContentLoaded", function () {
         //conditional interactions
         if (!reduceMotion && isDesktop) {
           // oldScrollIn();
-          scrollIn();
+          scrollIn(gsapContext);
         }
       }
     );
