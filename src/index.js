@@ -27,10 +27,12 @@ const pageLoadAnimation = function () {
     },
   });
   tl.set(title, { opacity: 1 });
+  tl.fromTo(title, { scale: 1.2 }, { scale: 1 });
   tl.fromTo(
     splitText.words,
     { opacity: 0 },
-    { opacity: 1, stagger: { each: 0.1, from: "random" } }
+    { opacity: 1, stagger: { each: 0.1, from: "random" } },
+    "<"
   );
   tl.fromTo(
     items,
@@ -150,7 +152,7 @@ const pageLoadandTransition = function () {
         transitionCloud2,
         { xPercent: 10, scale: 2, opacity: 0 },
         { xPercent: 0, scale: 1, opacity: 1, duration: 1.2 },
-        "<"
+        "<.2"
       );
       tlClick.fromTo(
         transitionBackground,
