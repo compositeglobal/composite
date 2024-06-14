@@ -257,7 +257,10 @@ export const pageLoadandTransition = function () {
     const tlLoaded = gsap.timeline({
       paused: true,
       delay: 0.1,
-      onComplete: () => heroAnimation.play(),
+      onComplete: () => {
+        heroAnimation.play();
+        ScrollTrigger.refresh();
+      },
     });
     tlLoaded.set(loadBackground, { display: "none" });
     tlLoaded.fromTo(
