@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // LENIS SMOOTH SCROLL
   const lenis = new Lenis({
     lerp: 0.1,
-    wheelMultiplier: 0.7,
+    wheelMultiplier: 0.4,
     gestureOrientation: "vertical",
     normalizeWheel: false,
     smoothTouch: false,
@@ -210,6 +210,211 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   contactModal();
 
+  const swiperSliderStagger = function () {
+    const slides = document.querySelectorAll(
+      ".swiper-wrapper.is-products .card-service"
+    );
+    if (slides.length === 0) return;
+    //services animation in
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".swiper-wrapper.is-products",
+        start: "top 90%", // Animation starts when the top of the parent list hits 75% of the viewport height
+        end: "top center", // Animation ends when the bottom of the parent list exits the top of the viewport
+        toggleActions: "play none none none", // Play the animation once when the criteria are met
+      },
+    });
+    tl.fromTo(
+      slides,
+      {
+        opacity: 0, // Start from fully transparent
+        x: 100, // Start from 100 pixels to the right of the initial position
+      },
+      {
+        opacity: 1, // Start from fully transparent
+        x: 0, // Start from 100 pixels to the right of the initial position
+        duration: 0.6, // Duration of 1 second for each animation
+        ease: "power1.out", // Use a slight easing for a smooth animation
+        stagger: { each: 0.2, from: "start" }, // Stagger the start of each child's animation by 0.2 seconds
+      }
+    );
+  };
+  const customerStoriesSlider = function () {
+    const sliderComponent = ".cs_slider_component";
+    const sliderWrap = ".swiper";
+    const nextButton = ".swiper-next";
+    const previousButton = ".swiper-prev";
+    const activeClass = "is-active";
+    const disabledClass = "is-disabled";
+
+    gsap.utils.toArray(sliderComponent).forEach(function (element) {
+      if (!element) return;
+      const swiperEl = element.querySelector(sliderWrap);
+      const nextButtonEl = element.querySelector(nextButton);
+      const previousButtonEl = element.querySelector(previousButton);
+      if (!element || !nextButtonEl || !previousButtonEl) return;
+      const swiper = new Swiper(swiperEl, {
+        speed: 600,
+        loop: false,
+        drag: true,
+        followFinger: true,
+        freeMode: false,
+        updateOnMove: true,
+        rewind: false,
+        breakpoints: {
+          480: {
+            slidesPerView: 1,
+            spaceBetween: "0%",
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: "0%",
+          },
+          992: {
+            slidesPerView: "auto",
+            spaceBetween: "0%",
+          },
+        },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: disabledClass,
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+      });
+    });
+  };
+  const webflowFeaturesSlider = function () {
+    const sliderComponent = ".webflow-benefits_component";
+    const sliderWrap = ".swiper";
+    const nextButton = ".swiper-next";
+    const previousButton = ".swiper-prev";
+    const activeClass = "is-active";
+    const disabledClass = "is-disabled";
+    gsap.utils.toArray(sliderComponent).forEach(function (element) {
+      if (!element) return;
+      const swiperEl = element.querySelector(sliderWrap);
+      const nextButtonEl = element.querySelector(nextButton);
+      const previousButtonEl = element.querySelector(previousButton);
+      if (!element || !nextButtonEl || !previousButtonEl) return;
+      const swiper = new Swiper(swiperEl, {
+        speed: 600,
+        loop: false,
+        drag: true,
+        followFinger: true,
+        freeMode: false,
+        updateOnMove: true,
+        rewind: false,
+        breakpoints: {
+          480: {
+            slidesPerView: 1,
+            spaceBetween: "0%",
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: "0%",
+          },
+          992: {
+            slidesPerView: "auto",
+            spaceBetween: "0%",
+          },
+        },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: disabledClass,
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+      });
+    });
+  };
+
+  const servicesSlider = function () {
+    //slider main
+    $(".slider-main_component").each(function (index) {
+      let loopMode = false;
+      if ($(this).attr("loop-mode") === "true") {
+        loopMode = true;
+      }
+      let sliderDuration = 300;
+      if ($(this).attr("slider-duration") !== undefined) {
+        sliderDuration = +$(this).attr("slider-duration");
+      }
+      const swiper = new Swiper($(this).find(".swiper")[0], {
+        speed: sliderDuration,
+        loop: loopMode,
+        autoHeight: false,
+        centeredSlides: loopMode,
+        followFinger: true,
+        freeMode: false,
+        slideToClickedSlide: false,
+        slidesPerView: "auto",
+        spaceBetween: "3%",
+        rewind: false,
+        mousewheel: {
+          forceToAxis: true,
+        },
+        keyboard: {
+          enabled: true,
+          onlyInViewport: true,
+        },
+        breakpoints: {
+          // mobile landscape
+          480: {
+            slidesPerView: "1",
+            spaceBetween: "4%",
+          },
+          // tablet
+          768: {
+            slidesPerView: "3",
+            spaceBetween: "4%",
+          },
+          // desktop
+          992: {
+            slidesPerView: "4",
+            spaceBetween: "1%",
+          },
+        },
+        pagination: {
+          el: $(this).find(".swiper-bullet-wrapper")[0],
+          bulletActiveClass: "is-active",
+          bulletClass: "swiper-bullet",
+          bulletElement: "button",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: $(this).find(".swiper-next")[0],
+          prevEl: $(this).find(".swiper-prev")[0],
+          disabledClass: "is-disabled",
+        },
+        scrollbar: {
+          el: $(this).find(".swiper-drag-wrapper")[0],
+          draggable: true,
+          dragClass: "swiper-drag",
+          snapOnRelease: true,
+        },
+        slideActiveClass: "is-active",
+        slideDuplicateActiveClass: "is-active",
+
+        // Add event listeners for touchStart and touchEnd
+        on: {
+          touchStart: function () {
+            $(this.slides).css("transform", "scale(0.9)");
+          },
+          touchEnd: function () {
+            $(this.slides).css("transform", "scale(1)");
+          },
+          // Consider adding touchMove if you need more control during the drag
+          // touchMove: function () {
+          //   $(this.slides).css("transform", "scale(0.9)");
+          // },
+        },
+      });
+    });
+  };
+
   //////////////////////////////
   //Control Functions on page load
   const gsapInit = function () {
@@ -235,10 +440,27 @@ document.addEventListener("DOMContentLoaded", function () {
         if (isDesktop) {
           cursor(gsapContext);
         }
+        servicesSlider();
+        swiperSliderStagger();
+        customerStoriesSlider();
+        webflowFeaturesSlider();
       }
     );
   };
   gsapInit();
+
+  //reset gsap on click of reset triggers
+  const startClicked = function () {
+    //selector
+    const ELEMENT = '[data-load-click="true"]';
+    //time option
+    const items = document.querySelectorAll(ELEMENT);
+    items.forEach(function (item) {
+      item.click();
+      console.log(item);
+    });
+  };
+  startClicked();
 
   //reset gsap on click of reset triggers
   const scrollReset = function () {

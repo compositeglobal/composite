@@ -60,8 +60,12 @@ export const pageLoadandTransition = function () {
     // hero animation selectors
     const TITLE = "title";
     const ITEM = "item";
+    const FADE = "fade";
+    const STAGGER = "stagger";
 
     const items = document.querySelectorAll(`[${ATTRIBUTE}="${ITEM}"]`);
+    const fades = document.querySelectorAll(`[${ATTRIBUTE}="${FADE}"]`);
+    const staggers = document.querySelectorAll(`[${ATTRIBUTE}="${STAGGER}"]`);
     const title = document.querySelector(`[${ATTRIBUTE}="${TITLE}"]`);
     if (!title || items.length === 0) return;
 
@@ -83,12 +87,36 @@ export const pageLoadandTransition = function () {
       { opacity: 1, stagger: { each: 0.1, from: "random" } },
       "<"
     );
-    tl.fromTo(
-      items,
-      { opacity: 0, y: "2rem" },
-      { opacity: 1, y: "0rem", stagger: { each: 0.2, from: "start" } },
-      "<.3"
-    );
+    if (items.length !== 0) {
+      tl.fromTo(
+        items,
+        { opacity: 0, y: "2rem" },
+        { opacity: 1, y: "0rem", stagger: { each: 0.2, from: "start" } },
+        0.3
+      );
+    }
+    if (fades.length !== 0) {
+      tl.fromTo(
+        fades,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.8, stagger: { each: 0.2, from: "start" } },
+        0.3
+      );
+    }
+    if (staggers.length !== 0) {
+      const staggerChildren = [];
+      staggers.forEach((item) => {
+        const children = gsap.utils.toArray(item.children);
+        staggerChildren.push(...children);
+      });
+      console.log(staggerChildren);
+      tl.fromTo(
+        staggerChildren,
+        { opacity: 0, y: "2rem" },
+        { opacity: 1, y: "0rem", stagger: { each: 0.2, from: "start" } },
+        0.3
+      );
+    }
     return tl;
   };
   const heroAnimation = pageLoadAnimation();
