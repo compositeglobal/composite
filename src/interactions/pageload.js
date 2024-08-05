@@ -109,7 +109,6 @@ export const pageLoadandTransition = function () {
         const children = gsap.utils.toArray(item.children);
         staggerChildren.push(...children);
       });
-      console.log(staggerChildren);
       tl.fromTo(
         staggerChildren,
         { opacity: 0, y: "2rem" },

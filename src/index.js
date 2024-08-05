@@ -457,7 +457,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const items = document.querySelectorAll(ELEMENT);
     items.forEach(function (item) {
       item.click();
-      console.log(item);
     });
   };
   startClicked();
