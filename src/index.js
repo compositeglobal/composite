@@ -222,7 +222,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const lists = wrap.querySelectorAll(LIST);
       let reverse = attr(false, wrap.getAttribute(REVERSE));
       let duration = attr(30, wrap.getAttribute(DURATION));
-      console.log("hi");
       let direction = 1;
       if (reverse) {
         direction = -1;
@@ -375,7 +374,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const servicesSlider = function () {
     //slider main
-    $(".slider-main_component").each(function (index) {
+    $(".services-slider_component").each(function (index) {
       let loopMode = false;
       if ($(this).attr("loop-mode") === "true") {
         loopMode = true;
