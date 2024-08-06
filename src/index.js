@@ -210,6 +210,48 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   contactModal();
 
+  const logoMarquee = function () {
+    const WRAP = '[data-logos="wrap"]';
+    const LIST = '[data-logos="list"]';
+    const REVERSE = "data-logos-reverse"; // needs to be set to true if reversed
+    const DURATION = "data-logos-duration";
+
+    const wraps = document.querySelectorAll(WRAP);
+    if (wraps.length === 0) return;
+    wraps.forEach((wrap) => {
+      const lists = wrap.querySelectorAll(LIST);
+      let reverse = attr(false, wrap.getAttribute(REVERSE));
+      let duration = attr(30, wrap.getAttribute(DURATION));
+      console.log("hi");
+      let direction = 1;
+      if (reverse) {
+        direction = -1;
+      }
+      let tl = gsap.timeline({
+        repeat: -1,
+        defaults: {
+          ease: "none",
+        },
+      });
+      tl.fromTo(
+        lists,
+        {
+          xPercent: 0,
+        },
+        {
+          xPercent: -100 * direction,
+          duration: duration,
+        }
+      );
+      wrap.addEventListener("mouseenter", (event) => {
+        tl.timeScale(2);
+      });
+      wrap.addEventListener("mouseleave", (event) => {
+        tl.timeScale(1);
+      });
+    });
+  };
+
   const swiperSliderStagger = function () {
     const slides = document.querySelectorAll(
       ".swiper-wrapper.is-products .card-service"
@@ -444,6 +486,7 @@ document.addEventListener("DOMContentLoaded", function () {
         swiperSliderStagger();
         customerStoriesSlider();
         webflowFeaturesSlider();
+        logoMarquee();
       }
     );
   };
