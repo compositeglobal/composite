@@ -114,101 +114,136 @@ document.addEventListener("DOMContentLoaded", function () {
   //Utility Functions
 
   //replace low res images once high res images are loaded
-  const loadHighResImages = function () {
-    const highResImages = document.querySelectorAll(
-      ".image-container .high-res"
-    );
-    //if no high res images exist return the function
-    if (highResImages.length === 0) return;
-    highResImages.forEach((highResImg) => {
-      const lowResImg = highResImg.previousElementSibling; // Find the low-res image
+  // const loadHighResImages = function () {
+  //   const highResImages = document.querySelectorAll(
+  //     ".image-container .high-res"
+  //   );
+  //   //if no high res images exist return the function
+  //   if (highResImages.length === 0) return;
+  //   highResImages.forEach((highResImg) => {
+  //     const lowResImg = highResImg.previousElementSibling; // Find the low-res image
 
-      // Function to fade in the high-res image and fade out the low-res image
-      const fadeInHighRes = () => {
-        setTimeout(() => {
-          // Add a delay before the fade-in
-          highResImg.style.opacity = 1;
-          lowResImg.style.opacity = 0;
-        }, 300); // Delay in milliseconds (0.3 seconds)
-      };
+  //     // Function to fade in the high-res image and fade out the low-res image
+  //     const fadeInHighRes = () => {
+  //       setTimeout(() => {
+  //         // Add a delay before the fade-in
+  //         highResImg.style.opacity = 1;
+  //         lowResImg.style.opacity = 0;
+  //       }, 300); // Delay in milliseconds (0.3 seconds)
+  //     };
 
-      // Check if the high-res image is fully loaded
-      if (highResImg.complete && highResImg.naturalHeight !== 0) {
-        fadeInHighRes(); // If already loaded, apply the fade-in effect with the delay
+  //     // Check if the high-res image is fully loaded
+  //     if (highResImg.complete && highResImg.naturalHeight !== 0) {
+  //       fadeInHighRes(); // If already loaded, apply the fade-in effect with the delay
+  //     } else {
+  //       highResImg.onload = fadeInHighRes; // If not loaded, wait for the onload event
+  //     }
+  //   });
+  // };
+  // loadHighResImages();
+
+  //set all button hover text to the same values
+  // const updateButtonText = function () {
+  //   $(".nav-link, .nav-contact, .modal-trigger-button").hover(function () {
+  //     let textOne = $(this).find(".button-text-move").eq(0).text();
+  //     $(this).find(".button-text-move.is-second").text(textOne);
+  //   });
+  //   $(".button").hover(function () {
+  //     let textOne = $(this).find(".button-text-move").eq(0).text();
+  //     $(this).find(".button-text-move.is-second").text(textOne);
+  //   });
+  // };
+  // updateButtonText();
+
+  //Code for opening and closing Contact Modal //
+  // const contactModal = function () {
+  //   let modalTimeline = gsap.timeline({ paused: true });
+  //   //create gsap timeline
+  //   modalTimeline
+  //     .set(".contact-modal", { display: "block" }) // Ensure modal is displayed before animation starts
+  //     .from(".contact-modal_bg", { opacity: 0, duration: 0.5 }, 0) // Animate background
+  //     .from(
+  //       ".contact-modal_card",
+  //       {
+  //         y: "10rem",
+  //         scale: 0.9,
+  //         opacity: 0,
+  //         duration: 0.5,
+  //         ease: "power1.out",
+  //       },
+  //       0
+  //     ) // Animate card
+  //     .addPause() // Add a pause to the timeline to prevent auto-reverse
+  //     .to(".contact-modal_bg", { opacity: 0, duration: 0.5 }, "+=0") // Reverse background animation
+  //     .to(
+  //       ".contact-modal_card",
+  //       {
+  //         y: "10rem",
+  //         scale: 0.9,
+  //         opacity: 0,
+  //         duration: 0.5,
+  //         ease: "power1.in",
+  //       },
+  //       "-=0.5"
+  //     ) // Reverse card animation
+  //     .set(".contact-modal", { display: "none" }); // Hide modal after reverse animation
+
+  //   // Event listener for opening triggers
+  //   document.querySelectorAll("[data-contact-open]").forEach((trigger) => {
+  //     trigger.addEventListener("click", () => {
+  //       if (lenis) {
+  //         lenis.stop();
+  //       } // Disable Lenis smooth scrolling
+  //       modalTimeline.play(0); // Play from start
+  //     });
+  //   });
+
+  //   // Event listener for closing triggers
+  //   document.querySelectorAll("[data-contact-close]").forEach((trigger) => {
+  //     trigger.addEventListener("click", () => {
+  //       if (lenis) {
+  //         lenis.start();
+  //       } // Re-enable Lenis smooth scrolling
+  //       modalTimeline.reverse(); // Reverse the animation
+  //     });
+  //   });
+  // };
+  // contactModal();
+
+  const navbarBg = function () {
+    document.addEventListener("scroll", function () {
+      const navBg = document.querySelector(".nav-bg");
+      const scrollPosition =
+        window.scrollY || document.documentElement.scrollTop;
+      if (scrollPosition < 200) {
+        navBg.style.transform = "translateY(-100%)";
+        //gsap.to(navBg,{yPercent: -100, duration: 0.3});
       } else {
-        highResImg.onload = fadeInHighRes; // If not loaded, wait for the onload event
+        navBg.style.transform = "translateY(0%)";
+        //gsap.to(navBg,{yPercent: 0, duration: 0.3});
       }
     });
   };
-  loadHighResImages();
 
-  //set all button hover text to the same values
-  const updateButtonText = function () {
-    $(".nav-link, .nav-contact, .modal-trigger-button").hover(function () {
-      let textOne = $(this).find(".button-text-move").eq(0).text();
-      $(this).find(".button-text-move.is-second").text(textOne);
-    });
-    $(".button").hover(function () {
-      let textOne = $(this).find(".button-text-move").eq(0).text();
-      $(this).find(".button-text-move.is-second").text(textOne);
-    });
-  };
-  updateButtonText();
+  const navbarHideOnScroll = function () {
+    let lastScrollTop = 0;
+    const navbar = document.querySelector(".global-components");
 
-  //Code for opening and closing Contact Modal //
-  const contactModal = function () {
-    let modalTimeline = gsap.timeline({ paused: true });
-    //create gsap timeline
-    modalTimeline
-      .set(".contact-modal", { display: "block" }) // Ensure modal is displayed before animation starts
-      .from(".contact-modal_bg", { opacity: 0, duration: 0.5 }, 0) // Animate background
-      .from(
-        ".contact-modal_card",
-        {
-          y: "10rem",
-          scale: 0.9,
-          opacity: 0,
-          duration: 0.5,
-          ease: "power1.out",
-        },
-        0
-      ) // Animate card
-      .addPause() // Add a pause to the timeline to prevent auto-reverse
-      .to(".contact-modal_bg", { opacity: 0, duration: 0.5 }, "+=0") // Reverse background animation
-      .to(
-        ".contact-modal_card",
-        {
-          y: "10rem",
-          scale: 0.9,
-          opacity: 0,
-          duration: 0.5,
-          ease: "power1.in",
-        },
-        "-=0.5"
-      ) // Reverse card animation
-      .set(".contact-modal", { display: "none" }); // Hide modal after reverse animation
+    window.addEventListener("scroll", function () {
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    // Event listener for opening triggers
-    document.querySelectorAll("[data-contact-open]").forEach((trigger) => {
-      trigger.addEventListener("click", () => {
-        if (lenis) {
-          lenis.stop();
-        } // Disable Lenis smooth scrolling
-        modalTimeline.play(0); // Play from start
-      });
-    });
+      if (scrollTop > lastScrollTop) {
+        // Scrolling down, hide navbar
+        navbar.style.transform = "translateY(-100%)";
+      } else {
+        // Scrolling up, show navbar
+        navbar.style.transform = "translateY(0)";
+      }
 
-    // Event listener for closing triggers
-    document.querySelectorAll("[data-contact-close]").forEach((trigger) => {
-      trigger.addEventListener("click", () => {
-        if (lenis) {
-          lenis.start();
-        } // Re-enable Lenis smooth scrolling
-        modalTimeline.reverse(); // Reverse the animation
-      });
+      // Update lastScrollTop to the current scroll position
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Prevent lastScrollTop from going negative
     });
   };
-  contactModal();
 
   const logoMarquee = function () {
     const WRAP = '[data-logos="wrap"]';
@@ -280,13 +315,16 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     );
   };
+
+  //Global Swiper Constants
+  const sliderWrap = ".swiper";
+  const nextButton = ".swiper-next";
+  const previousButton = ".swiper-prev";
+  const activeClass = "is-active";
+  const disabledClass = "is-disabled";
+
   const customerStoriesSlider = function () {
     const sliderComponent = ".cs_slider_component";
-    const sliderWrap = ".swiper";
-    const nextButton = ".swiper-next";
-    const previousButton = ".swiper-prev";
-    const activeClass = "is-active";
-    const disabledClass = "is-disabled";
 
     gsap.utils.toArray(sliderComponent).forEach(function (element) {
       if (!element) return;
@@ -326,13 +364,94 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   };
+  const recentNewsSlider = function () {
+    const sliderComponent = ".recent-news_component";
+    gsap.utils.toArray(sliderComponent).forEach(function (element) {
+      if (!element) return;
+      const swiperEl = element.querySelector(sliderWrap);
+      const nextButtonEl = element.querySelector(nextButton);
+      const previousButtonEl = element.querySelector(previousButton);
+      if (!element || !nextButtonEl || !previousButtonEl) return;
+      const swiper = new Swiper(swiperEl, {
+        speed: 600,
+        loop: false,
+        drag: true,
+        followFinger: true,
+        freeMode: false,
+        updateOnMove: true,
+        rewind: false,
+
+        breakpoints: {
+          480: {
+            slidesPerView: 1,
+            spaceBetween: "24",
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: "24",
+          },
+          // desktop
+          992: {
+            slidesPerView: 3,
+            spaceBetween: 32,
+          },
+        },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: disabledClass,
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+      });
+    });
+  };
+  const aboutPartnersSlider = function () {
+    const sliderComponent = ".about-partners_component";
+    gsap.utils.toArray(sliderComponent).forEach(function (element) {
+      if (!element) return;
+      const swiperEl = element.querySelector(sliderWrap);
+      const nextButtonEl = element.querySelector(nextButton);
+      const previousButtonEl = element.querySelector(previousButton);
+      if (!element || !nextButtonEl || !previousButtonEl) return;
+      const swiper = new Swiper(swiperEl, {
+        speed: 600,
+        loop: false,
+        slidesPerView: 1,
+        slidesPerGroup: 1,
+        spaceBetween: 20,
+        loop: false,
+        centeredSlides: false,
+        mousewheel: {
+          forceToAxis: true,
+        },
+        // Responsive breakpoints
+        breakpoints: {
+          // when window width is >= 480px
+          480: {
+            slidesPerView: 1,
+          },
+          // when window width is >= 768px
+          768: {
+            slidesPerView: 2,
+          },
+          // when window width is >= 992px
+          992: {
+            slidesPerView: 3,
+          },
+        },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: disabledClass,
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+      });
+    });
+  };
   const webflowFeaturesSlider = function () {
     const sliderComponent = ".webflow-benefits_component";
-    const sliderWrap = ".swiper";
-    const nextButton = ".swiper-next";
-    const previousButton = ".swiper-prev";
-    const activeClass = "is-active";
-    const disabledClass = "is-disabled";
     gsap.utils.toArray(sliderComponent).forEach(function (element) {
       if (!element) return;
       const swiperEl = element.querySelector(sliderWrap);
@@ -481,11 +600,17 @@ document.addEventListener("DOMContentLoaded", function () {
         if (isDesktop) {
           cursor(gsapContext);
         }
+        //Sliders
         servicesSlider();
         swiperSliderStagger();
         customerStoriesSlider();
         webflowFeaturesSlider();
+        aboutPartnersSlider();
+        recentNewsSlider();
+        //Other interactions
         logoMarquee();
+        navbarBg();
+        navbarHideOnScroll();
       }
     );
   };
