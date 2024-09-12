@@ -157,21 +157,39 @@ export const scrollIn = function (gsapContext) {
     //item is the image wrap for this animation
     if (!item) return;
     //set clip path directions
-    const clipStart = getCLipStart(item);
-    const clipEnd = "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
     //create timeline
     const tl = scrollInTL(item);
     tl.fromTo(
       item,
       {
-        clipPath: clipStart,
+        filter: "blur(32px)",
       },
       {
-        clipPath: clipEnd,
-        duration: 1,
+        filter: "blur(0px)",
+        duration: 1.2,
       }
     );
   };
+  // OLD VERSION
+  // const scrollInImage = function (item) {
+  //   //item is the image wrap for this animation
+  //   if (!item) return;
+  //   //set clip path directions
+  //   const clipStart = getCLipStart(item);
+  //   const clipEnd = "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
+  //   //create timeline
+  //   const tl = scrollInTL(item);
+  //   tl.fromTo(
+  //     item,
+  //     {
+  //       clipPath: clipStart,
+  //     },
+  //     {
+  //       clipPath: clipEnd,
+  //       duration: 1,
+  //     }
+  //   );
+  // };
 
   const scrollInLine = function (item) {
     if (!item) return;

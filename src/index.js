@@ -420,7 +420,6 @@ document.addEventListener("DOMContentLoaded", function () {
         slidesPerView: 1,
         slidesPerGroup: 1,
         spaceBetween: 20,
-        loop: false,
         centeredSlides: false,
         mousewheel: {
           forceToAxis: true,
