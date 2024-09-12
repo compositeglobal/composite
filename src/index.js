@@ -286,6 +286,79 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   };
 
+  const footerScroll = function () {
+    const footerWrap = document.querySelector(".section.is-footer");
+    const footerContainer = document.querySelector(".footer-container");
+    const footerVideos = document.querySelector(".cta-video-wrapper");
+    const footerCTA = document.querySelector(".cta-wrapper");
+    const footerStairs = document.querySelector(".cta-video-stairs");
+    const footerClouds = document.querySelector(".cta-video-clouds");
+
+    if (!footerWrap) return;
+    console.log("hi");
+    //footer animating in
+    let scrollInTL = gsap.timeline({
+      scrollTrigger: {
+        trigger: footerWrap,
+        start: "top 55%",
+        end: "top 20%",
+        scrub: true,
+        // markers: true,
+      },
+    });
+    scrollInTL.fromTo(
+      footerContainer,
+      {
+        "--interactions--footer-radius": "50vw",
+        scale: 0.8,
+      },
+      {
+        "--interactions--footer-radius": "0vw",
+        scale: 1,
+        ease: "power1.inOut",
+        duration: 1,
+      }
+    );
+    let parallaxTL = gsap.timeline({
+      scrollTrigger: {
+        trigger: footerWrap,
+        start: "top bottom",
+        end: "bottom bottom",
+        scrub: true,
+      },
+    });
+    parallaxTL.fromTo(
+      footerCTA,
+      {
+        yPercent: 0,
+      },
+      {
+        yPercent: -10,
+      },
+      "<"
+    );
+    parallaxTL.fromTo(
+      footerStairs,
+      {
+        yPercent: 0,
+      },
+      {
+        yPercent: -5,
+      },
+      "<"
+    );
+    parallaxTL.fromTo(
+      footerClouds,
+      {
+        yPercent: -10,
+      },
+      {
+        yPercent: 0,
+      },
+      "<"
+    );
+  };
+
   const swiperSliderStagger = function () {
     const slides = document.querySelectorAll(
       ".swiper-wrapper.is-products .card-service"
@@ -610,6 +683,7 @@ document.addEventListener("DOMContentLoaded", function () {
         logoMarquee();
         navbarBg();
         navbarHideOnScroll();
+        footerScroll();
       }
     );
   };
