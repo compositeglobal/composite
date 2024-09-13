@@ -295,7 +295,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const footerClouds = document.querySelector(".cta-video-clouds");
 
     if (!footerWrap) return;
-    console.log("hi");
     //footer animating in
     let scrollInTL = gsap.timeline({
       scrollTrigger: {
@@ -469,6 +468,34 @@ document.addEventListener("DOMContentLoaded", function () {
             spaceBetween: 32,
           },
         },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: disabledClass,
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+      });
+    });
+  };
+  const serviceDetailsSlider = function () {
+    const sliderComponent = ".service-details_component";
+    gsap.utils.toArray(sliderComponent).forEach(function (element) {
+      if (!element) return;
+      const swiperEl = element.querySelector(sliderWrap);
+      const nextButtonEl = element.querySelector(nextButton);
+      const previousButtonEl = element.querySelector(previousButton);
+      if (!element || !nextButtonEl || !previousButtonEl) return;
+      const swiper = new Swiper(swiperEl, {
+        speed: 600,
+        // loop: false,
+        slidesPerView: 1.35,
+        spaceBetween: 24,
+        drag: true,
+        followFinger: true,
+        freeMode: false,
+        // updateOnMove: true,
+        // rewind: false,
         navigation: {
           nextEl: nextButtonEl,
           prevEl: previousButtonEl,
@@ -671,6 +698,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (isDesktop) {
           cursor(gsapContext);
+        }
+        if (isMobile) {
+          serviceDetailsSlider();
         }
         //Sliders
         servicesSlider();

@@ -166,7 +166,7 @@ export const scrollIn = function (gsapContext) {
       },
       {
         filter: "blur(0px)",
-        duration: 1.2,
+        duration: 0.6,
       }
     );
   };
